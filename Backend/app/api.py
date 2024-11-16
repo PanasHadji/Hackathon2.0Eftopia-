@@ -15,14 +15,14 @@ app.add_middleware(
 )
 
 # # Load the model and pipeline
-# model_name = "nlpaueb/legal-bert-base-uncased"
-# nlp_pipeline = pipeline("zero-shot-classification", model=model_name)
-# 
-# # Your classification categories
-# law_categories = [
-#     "Civil and Political Rights", "Environmental Law", "Immigration Law",
-#     "Financial Law", "Family Law", "IP Law", "Commercial Law", "International Law"
-# ]
+model_name = "nlpaueb/legal-bert-base-uncased"
+nlp_pipeline = pipeline("zero-shot-classification", model=model_name)
+
+# Your classification categories
+law_categories = [
+    "Civil and Political Rights", "Environmental Law", "Immigration Law",
+    "Financial Law", "Family Law", "IP Law", "Commercial Law", "International Law"
+]
 
 # Define the SearchRequest model
 class SearchRequest(BaseModel):
@@ -31,11 +31,10 @@ class SearchRequest(BaseModel):
 @app.post("/search")
 async def search(request: SearchRequest):
     text = request.query
-    return {"text": "Hello"}
-#     result = nlp_pipeline(text, law_categories)
-#     predicted_label = result["labels"][0]
-#     probabilities = dict(zip(result["labels"], result["scores"]))
-#     return {"query": text, "predicted_label": predicted_label, "probabilities": probabilities}
+    result = nlp_pipeline(text, law_categories)
+    predicted_label = result["labels"][0]
+    probabilities = dict(zip(result["labels"], result["scores"]))
+    return {"query": text, "predicted_label": predicted_label, "probabilities": probabilities}
 
 @app.get("/")
 def read_root():
