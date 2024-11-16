@@ -97,10 +97,22 @@
   .p-multiselect, .p-dropdown {
     width: 90%;
   }
+
+  .chart-dropdown .p-dropdown{
+    width: 15em;
+  }
 }
 
 .search-btn-container {
   justify-content: end;
   display: flex;
   gap: 30px;
+}
+
+.results-container {
+  margin-top: 20px;
+}
+
+.case-details {
+  margin: 10px 0;
 }
