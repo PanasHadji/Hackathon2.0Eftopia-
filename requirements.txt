@@ -3,3 +3,8 @@ torch
 transformers
 pypdf
 docx-parser
+uvicorn
+fastapi
+pydantic
+scikit-learn
+pytorch
