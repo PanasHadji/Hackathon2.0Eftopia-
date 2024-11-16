@@ -1,13 +1,20 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {Router, RouterModule} from '@angular/router';
+import {ButtonModule} from 'primeng/button';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  imports: [RouterModule, ButtonModule],
+  template: `
+    <router-outlet></router-outlet>
+  `,
 })
 export class AppComponent {
-  title = 'eftopia-hack-tool';
+  constructor(private router: Router) {
+  }
+
+  goToSearchPage() {
+    this.router.navigate(['../file-search']);
+  }
 }
