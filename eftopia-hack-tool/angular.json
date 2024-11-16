@@ -61,10 +61,18 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "eftopia-hack-tool:build:production"
+              "buildTarget": "eftopia-hack-tool:build:production",
+              "host": "0.0.0.0",
+              "port": 4200,
+              "publicHost": "localhost:4200",
+              "proxyConfig": "proxy.conf.json"
             },
             "development": {
-              "buildTarget": "eftopia-hack-tool:build:development"
+              "buildTarget": "eftopia-hack-tool:build:development",
+              "host": "0.0.0.0",
+              "port": 4200,
+              "publicHost": "localhost:4200",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

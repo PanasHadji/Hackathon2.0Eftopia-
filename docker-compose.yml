@@ -2,16 +2,25 @@ version: '3.8'
 services:
   backend:
     build:
-      context: .
-    command: uvicorn api:app --host 0.0.0.0 --port 5001
+      context: ./backend
+      dockerfile: Dockerfile
+    command: uvicorn api:Backend --host 0.0.0.0 --port 5001
     ports:
       - "5001:5001"
+    volumes:
+      - ./Backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
 
   frontend:
-    image: node:18
-    working_dir: /app
+    build:
+      context: ./eftopia-hack-tool
+      dockerfile: Dockerfile
+    working_dir: /eftopia-hack-tool
     volumes:
       - ./eftopia-hack-tool:/app
-    command: ["sh", "-c", "npm install && ng serve --host 0.0.0.0 --port 4200"]
+    command: [ "sh", "-c", "npm install && ng serve --host 0.0.0.0 --port 4200" ]
     ports:
       - "4200:4200"
+    depends_on:
+      - backend

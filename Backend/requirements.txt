@@ -1,0 +1,7 @@
+pandas==1.5.3
+transformers==4.33.3
+pypdf==3.8.1
+docx-parser
+uvicorn==0.23.0
+fastapi==0.101.1
+pydantic==1.10.9
