@@ -103,8 +103,8 @@
         </div>
     </div>
     <div class="search-btn-container">
-        <button pButton label="Search"></button>
-        <button pButton label="Clear All"></button>
+        <button pButton label="Search" (click)="onSearch()"></button>
+        <button pButton label="Clear All" (click)="console.log()"></button>
     </div>
 </div>
 
@@ -127,7 +127,7 @@
                         (onChange)="onChartToggle(courtCase.id, $event.value)">
                 </p-dropdown>
 
-                <div style="height: 300px" [id]="'chart-container-' + courtCase.id" class="chart"></div>
+                <div style="height: 300px" [id]="'chart-container-' + courtCase.id"></div>
             </div>
         </p-accordionTab>
     </p-accordion>

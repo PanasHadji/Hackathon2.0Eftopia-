@@ -6,40 +6,41 @@ import torch
 # Initialize the FastAPI app
 app = FastAPI()
 
-# Load the Bert Model and PipeLine
+# Load the Bert Model and Pipeline
 model_name = "nlpaueb/legal-bert-base-uncased"
 nlp_pipeline = pipeline("zero-shot-classification", model=model_name)
 
-#the labels for the crime commited
-law_categories = ["Civil and Political Rights", "Enviromental Law",
-                  "Immigration Law", "Financial Law", "Family Law",
-                  "IP Law", "Commercial Law", "International Law"]
-
-#dummy test
-text = "The defendant shot his wife 8 times in the face."
+# The labels for the crime committed
+law_categories = [
+    "Civil and Political Rights", "Environmental Law",
+    "Immigration Law", "Financial Law", "Family Law",
+    "IP Law", "Commercial Law", "International Law"
+]
 
 # Define request model for input data
 class SearchRequest(BaseModel):
     query: str
-    #TODO add filters
+    # You can add additional filters or parameters here if needed
+    # e.g., filters: Optional[List[str]]
 
-# Endpoint for zero-shot classification
-@app.post("/predict")
-async def predict(request: SearchRequest):
+# Define response model for the /search endpoint
+@app.post("/search")
+async def search(request: SearchRequest):
     text = request.query
-    law_categories = request.law_categories
 
-    # Perform zero-shot classification
+    # Perform zero-shot classification using the pipeline
     result = nlp_pipeline(text, law_categories)
 
-    # Get the most likely label
+    # Get the most likely label and associated probabilities
     predicted_label = result["labels"][0]
-    probabilities = result["scores"]
+    probabilities = dict(zip(result["labels"], result["scores"]))
 
     return {
+        "query": text,
         "predicted_label": predicted_label,
-        "probabilities": dict(zip(result["labels"], probabilities)),
+        "probabilities": probabilities,
     }
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Legal Case Classifier API!"}

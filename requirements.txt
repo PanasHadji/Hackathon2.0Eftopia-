@@ -7,4 +7,4 @@ uvicorn
 fastapi
 pydantic
 scikit-learn
-pytorch
+torch
