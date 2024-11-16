@@ -9,7 +9,7 @@ import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-b
   imports: [RouterModule, ButtonModule],
   template: `
     <div class="main-container">
-      <h1 class="animated-title">Welcome to My App</h1>
+      <h1 class="animated-title">Enhancing Digital Justice</h1>
       <button pButton type="button" label="Start" class="start-button" (click)="goToSearchPage()"></button>
     </div>
   `,
