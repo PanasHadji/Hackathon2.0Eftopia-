@@ -1,4 +1,4 @@
-import {AfterViewInit, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {DropdownModule} from 'primeng/dropdown';
@@ -16,6 +16,42 @@ import * as am5xy from '@amcharts/amcharts5/xy';
 import * as am5radar from '@amcharts/amcharts5/radar';
 import * as am5hierarchy from '@amcharts/amcharts5/hierarchy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+
+export interface ChildCategory {
+  name: string;
+  value: number;
+  children?: ChildCategory[];
+}
+
+export interface Category {
+  name: string;
+  value: number;
+  children: ChildCategory[];
+}
+
+export interface PercentageData {
+  category: string;
+  value: number;
+}
+
+export interface RadarData {
+  category: string;
+  value: number;
+}
+
+export interface CourtCase {
+  id: number;
+  caseName: string;
+  caseNumber: string;
+  summary: string;
+  verdict: string;
+  date: string;
+  categories: Category[];
+  categoryPercentages: PercentageData[];
+  radarData: RadarData[];
+}
+
+export type CourtCases = CourtCase[];
 
 @Component({
   selector: 'app-file-search',
@@ -47,8 +83,16 @@ export class FileSearchComponent implements AfterViewInit {
   displayInfo: boolean = false;
 
   languages = [{name: 'English'}, {name: 'Greek'}, {name: 'French'}];
-  courts = [{name: 'Court 1'}, {name: 'Court 2'}, {name: 'Court 3'}];
+  courts = [{name: 'ECtHR'}, {name: 'CJEU'}, {name: 'CYLAW'}, {name: 'Cour de cassation'}];
 
+  selectedChartType: { [key: number]: string } = {};
+  chartOptions = [
+    {label: 'Pie Chart', icon: 'pi pi-chart-pie'},
+    {label: 'Radar Chart', icon: 'pi pi-compass'},
+    {label: 'Force-Directed Tree', icon: 'pi pi-sitemap'},
+  ];
+
+  courtCases: CourtCases = [];
 
   onSearch() {
     console.log('Searching for:', this.searchQuery);
@@ -71,212 +115,58 @@ export class FileSearchComponent implements AfterViewInit {
       },
       body: JSON.stringify(requestData),
     })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         console.log('Search results:', data);
+
+        if (Array.isArray(data)) {
+          this.courtCases = data;
+          this.cdr.detectChanges();
+        } else {
+          console.warn('Data received is not an array, converting to array format.');
+          this.courtCases = Object.values(data);
+        }
+
+        this.initializeCharts();
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error during search:', error);
+        alert('An error occurred while fetching the search results. Please try again.');
       });
   }
 
   clearAll() {
-    this.displayInfo = true;
+    console.log('Clearing search inputs and results...');
+    this.searchQuery = '';
+    this.searchCaseDetailsQuery = '';
+    this.selectedLanguage = '';
+    this.selectedCourt = '';
+    this.startDate = null;
+    this.endDate = null;
+    this.article = '';
+    this.displayInfo = false;
+    this.courtCases = [];
   }
 
-  courtCases = [
-    {
-      id: 1,
-      caseName: 'Case of Immigration Policy',
-      caseNumber: '2023-IM-001',
-      summary: 'A case regarding the recent changes in immigration policies and their legal implications.',
-      verdict: 'In favor of the plaintiff.',
-      date: '2023-05-12',
-      categories: [
-        {
-          name: 'Immigration Law',
-          value: 35,
-          children: [
-            {
-              name: 'Visa Policy',
-              value: 20,
-              children: [
-                {name: 'Temporary Visas', value: 15},
-                {name: 'Permanent Visas', value: 5}
-              ]
-            },
-            {
-              name: 'Refugee Law',
-              value: 15,
-              children: [
-                {name: 'Asylum Seekers', value: 10},
-                {name: 'Resettlement Programs', value: 5}
-              ]
-            }
-          ]
-        },
-        {
-          name: 'Financial Law',
-          value: 45,
-          children: [
-            {
-              name: 'Taxation',
-              value: 25,
-              children: [
-                {name: 'Corporate Taxation', value: 10},
-                {name: 'Personal Taxation', value: 15}
-              ]
-            },
-            {
-              name: 'Investment Law',
-              value: 20,
-              children: [
-                {name: 'Stock Market Regulation', value: 10},
-                {name: 'Private Equity', value: 10}
-              ]
-            }
-          ]
-        },
-        {
-          name: 'Criminal Law',
-          value: 20,
-          children: [
-            {
-              name: 'White-collar Crimes',
-              value: 10,
-              children: [
-                {name: 'Fraud', value: 5},
-                {name: 'Embezzlement', value: 5}
-              ]
-            },
-            {
-              name: 'Violent Crimes',
-              value: 10,
-              children: [
-                {name: 'Assault', value: 5},
-                {name: 'Murder', value: 5}
-              ]
-            }
-          ]
-        }
-      ],
-      categoryPercentages: [
-        {category: 'Antitrust Law', value: 55},
-        {category: 'Corporate Law', value: 30},
-        {category: 'Technology Law', value: 15},
-      ],
-      radarData: [
-        {category: 'Antitrust Law', value: 80},
-        {category: 'Corporate Law', value: 60},
-        {category: 'Technology Law', value: 50},
-      ],
-    },
-    {
-      id: 2,
-      caseName: 'Financial Crimes and Tax Evasion',
-      caseNumber: '2023-FC-002',
-      summary: 'A case investigating the involvement of corporate entities in large-scale tax evasion activities.',
-      verdict: 'In favor of the defendant.',
-      date: '2023-06-15',
-      categories: [
-        {
-          name: 'Financial Law',
-          value: 60,
-          children: [
-            {
-              name: 'Corporate Tax Evasion',
-              value: 35,
-              children: [
-                {name: 'Offshore Accounts', value: 20},
-                {name: 'Shell Companies', value: 15}
-              ]
-            },
-            {
-              name: 'Money Laundering',
-              value: 25,
-              children: [
-                {name: 'International Laundering', value: 15},
-                {name: 'Domestic Laundering', value: 10}
-              ]
-            }
-          ]
-        },
-        {
-          name: 'Corporate Law',
-          value: 25,
-          children: [
-            {
-              name: 'Corporate Governance',
-              value: 15,
-              children: [
-                {name: 'Board of Directors', value: 8},
-                {name: 'Executive Compensation', value: 7}
-              ]
-            },
-            {
-              name: 'Business Compliance',
-              value: 40,
-              children: [
-                {name: 'Regulatory Compliance', value: 25},
-                {name: 'Internal Audits', value: 15}
-              ]
-            }
-          ]
-        },
-        {
-          name: 'Criminal Law',
-          value: 35,
-          children: [
-            {
-              name: 'Fraud',
-              value: 20,
-              children: [
-                {name: 'Ponzi Schemes', value: 16},
-                {name: 'Tax Fraud', value: 14}
-              ]
-            },
-            {
-              name: 'Bribery',
-              value: 25,
-              children: [
-                {name: 'Corporate Bribery', value: 20},
-                {name: 'Government Bribery', value: 16}
-              ]
-            }
-          ]
-        }
-      ],
-      categoryPercentages: [
-        {category: 'Antitrust Law', value: 55},
-        {category: 'Corporate Law', value: 30},
-        {category: 'Technology Law', value: 15},
-      ],
-      radarData: [
-        {category: 'Antitrust Law', value: 80},
-        {category: 'Corporate Law', value: 60},
-        {category: 'Technology Law', value: 50},
-      ],
-    },
-    // Additional cases follow the same structure...
-  ];
-
-  selectedChartType: { [key: number]: string } = {};
-  chartOptions = [
-    {label: 'Pie Chart', icon: 'pi pi-chart-pie'},
-    {label: 'Radar Chart', icon: 'pi pi-compass'},
-    {label: 'Force-Directed Tree', icon: 'pi pi-sitemap'},
-  ];
-
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
   }
 
   ngAfterViewInit() {
-    this.courtCases.forEach((courtCase) => {
+    this.initializeCharts();
+  }
+
+  initializeCharts() {
+    if (!this.courtCases || this.courtCases.length === 0) {
+      console.warn('No court cases available for rendering charts.');
+      return;
+    }
+
+    this.courtCases.forEach((courtCase: CourtCase) => {
       this.renderChart(courtCase.id, 'Pie Chart');
     });
   }
@@ -307,7 +197,7 @@ export class FileSearchComponent implements AfterViewInit {
   }
 
   getCaseDetails(caseId: number) {
-    return this.courtCases.find((courtCase) => courtCase.id === caseId)!;
+    return this.courtCases.find((courtCase: any) => courtCase.id === caseId)!;
   }
 
   renderPieChart(root: am5.Root, data: any) {
@@ -333,20 +223,20 @@ export class FileSearchComponent implements AfterViewInit {
 
     const data = {
       name: caseDetails?.caseName || 'Unknown Case',
-      children: categories.map((category) => ({
+      children: categories.map((category: any) => ({
         name: category.name,
         value: category.value,
-        children: category.children.map((subcategory) => ({
+        children: category.children?.map((subcategory: any) => ({
           name: subcategory.name,
           value: subcategory.value,
-          children: subcategory.children.map((subSubcategory) => ({
+          children: subcategory.children?.map((subSubcategory: any) => ({
             name: subSubcategory.name,
             value: subSubcategory.value
-          }))
-        }))
+          })) || []
+        })) || []
       }))
     };
-
+    console.log(data)
     var zoomableContainer = root.container.children.push(
       am5.ZoomableContainer.new(root, {
         width: am5.p100,
@@ -386,7 +276,6 @@ export class FileSearchComponent implements AfterViewInit {
     series.data.setAll([data]);
     series.appear(1000, 100);
   }
-
 
   renderRadarChart(root: am5.Root, data: any) {
     const chart = root.container.children.push(

@@ -104,11 +104,12 @@
     </div>
     <div class="search-btn-container">
         <button pButton label="Search" (click)="onSearch()"></button>
-        <button pButton label="Clear All" (click)="console.log()"></button>
+        <button pButton label="Clear All" (click)="clearAll()"></button>
     </div>
 </div>
 
 <div class="results-container">
+  @if (courtCases.length > 0){
     <h3>Search Results</h3>
     <p-accordion>
         <p-accordionTab *ngFor="let courtCase of courtCases; let i = index" [header]="courtCase.caseName">
@@ -131,6 +132,9 @@
             </div>
         </p-accordionTab>
     </p-accordion>
+  } @else {
+    <h3>No Results</h3>
+  }
 </div>
 
 <footer class="bg-white">
