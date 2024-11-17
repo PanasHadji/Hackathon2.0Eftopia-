@@ -41,6 +41,8 @@ export interface RadarData {
 
 export interface CourtCase {
   id: number;
+  similarity: number;
+  trust: number;
   caseName: string;
   caseNumber: string;
   summary: string;
@@ -126,6 +128,7 @@ export class FileSearchComponent implements AfterViewInit {
 
         if (Array.isArray(data)) {
           this.courtCases = data;
+          this.courtCases.sort((a, b) => b.similarity - a.similarity);
           this.cdr.detectChanges();
         } else {
           console.warn('Data received is not an array, converting to array format.');

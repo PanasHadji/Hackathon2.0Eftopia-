@@ -112,26 +112,40 @@
   @if (courtCases.length > 0){
     <h3>Search Results</h3>
     <p-accordion>
-        <p-accordionTab *ngFor="let courtCase of courtCases; let i = index" [header]="courtCase.caseName">
-            <div class="case-details">
-                <p><strong>Case Number:</strong> {{ courtCase.caseNumber }}</p>
-                <p><strong>Date:</strong> {{ courtCase.date }}</p>
-                <p><strong>Summary:</strong> {{ courtCase.summary }}</p>
-                <p><strong>Verdict:</strong> {{ courtCase.verdict }}</p>
-            </div>
+      <p-accordionTab *ngFor="let courtCase of courtCases; let i = index" [header]="courtCase.caseName">
 
-            <div class="chart-section">
-                <p-dropdown class="chart-dropdown"
-                        [options]="chartOptions"
-                        [(ngModel)]="selectedChartType[courtCase.id]"
-                        placeholder="Select Chart Type"
-                        (onChange)="onChartToggle(courtCase.id, $event.value)">
-                </p-dropdown>
+        <div class="similarity-score" [ngClass]="{
+            'high-similarity': courtCase.similarity >= 85,
+            'medium-similarity': courtCase.similarity >= 65 && courtCase.similarity < 85,
+            'low-similarity': courtCase.similarity < 65
+        }">
+          <strong>Similarity: </strong> {{ courtCase.similarity }}%
+        </div>
 
-                <div style="height: 300px" [id]="'chart-container-' + courtCase.id"></div>
-            </div>
-        </p-accordionTab>
+        <div class="case-details">
+          <p><strong>Case Number:</strong> {{ courtCase.caseNumber }}</p>
+          <p><strong>Date:</strong> {{ courtCase.date }}</p>
+          <p><strong>Summary:</strong> {{ courtCase.summary }}</p>
+          <p><strong>Verdict:</strong> {{ courtCase.verdict }}</p>
+        </div>
+
+        <div class="trust-score">
+          <p><strong>Trust Score: </strong> {{ courtCase.trust }}</p>
+        </div>
+
+        <div class="chart-section">
+          <p-dropdown class="chart-dropdown"
+                      [options]="chartOptions"
+                      [(ngModel)]="selectedChartType[courtCase.id]"
+                      placeholder="Select Chart Type"
+                      (onChange)="onChartToggle(courtCase.id, $event.value)">
+          </p-dropdown>
+
+          <div style="height: 300px" [id]="'chart-container-' + courtCase.id"></div>
+        </div>
+      </p-accordionTab>
     </p-accordion>
+
   } @else {
     <h3>No Results</h3>
   }

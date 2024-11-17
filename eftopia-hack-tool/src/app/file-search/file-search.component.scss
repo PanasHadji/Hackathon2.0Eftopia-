@@ -116,3 +116,25 @@
 .case-details {
   margin: 10px 0;
 }
+
+.similarity-score {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.high-similarity {
+  color: green;
+}
+
+.medium-similarity {
+  color: #9f9f13;
+}
+
+.low-similarity {
+  color: red;
+}
+
+.trust-score {
+  font-size: 16px;
+  margin-top: 15px;
+}
