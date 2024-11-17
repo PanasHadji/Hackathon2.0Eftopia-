@@ -102,7 +102,7 @@ export class FileSearchComponent implements AfterViewInit {
     const requestData = {
       query: this.searchQuery,
       searchCaseDetailsQuery: this.searchCaseDetailsQuery,
-      selectedLanguage: this.selectedLanguage,
+      language: this.selectedLanguage.name,
       selectedCourt: this.selectedCourt,
       startDate: this.startDate ? this.startDate.toISOString() : null,
       endDate: this.endDate ? this.endDate.toISOString() : null,
