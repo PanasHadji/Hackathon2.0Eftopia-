@@ -38,7 +38,7 @@ import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 })
 export class FileSearchComponent implements AfterViewInit {
   searchQuery: string = '';
-  searchCAseDetailsQuery: string = '';
+  searchCaseDetailsQuery: string = '';
   selectedLanguage: any;
   selectedCourt: any;
   startDate: Date | null = null;
@@ -53,7 +53,16 @@ export class FileSearchComponent implements AfterViewInit {
   onSearch() {
     console.log('Searching for:', this.searchQuery);
 
-    const requestData = {query: this.searchQuery};
+    const requestData = {
+      query: this.searchQuery,
+      searchCaseDetailsQuery: this.searchCaseDetailsQuery,
+      selectedLanguage: this.selectedLanguage,
+      selectedCourt: this.selectedCourt,
+      startDate: this.startDate ? this.startDate.toISOString() : null,
+      endDate: this.endDate ? this.endDate.toISOString() : null,
+      article: this.article,
+      displayInfo: this.displayInfo,
+    };
 
     fetch('http://localhost:5001/search', {
       method: 'POST',
@@ -338,16 +347,21 @@ export class FileSearchComponent implements AfterViewInit {
       }))
     };
 
-    const container = root.container.children.push(
-      am5.Container.new(root, {
-        width: am5.percent(100),
-        height: am5.percent(100),
-        layout: root.horizontalLayout,
+    var zoomableContainer = root.container.children.push(
+      am5.ZoomableContainer.new(root, {
+        width: am5.p100,
+        height: am5.p100,
+        wheelable: true,
+        pinchZoom: true,
       })
     );
 
-    const series = container.children.push(
-      am5hierarchy.ForceDirected.new(root, {
+    var zoomTools = zoomableContainer.children.push(am5.ZoomTools.new(root, {
+      target: zoomableContainer
+    }));
+
+    var series = zoomableContainer.contents.children.push(am5hierarchy.ForceDirected.new(root, {
+        maskContent: false,
         singleBranchOnly: false,
         downDepth: 3,
         topDepth: 1,
@@ -360,6 +374,8 @@ export class FileSearchComponent implements AfterViewInit {
         manyBodyStrength: -50,
         centerStrength: 5,
         nodePadding: 1,
+        minRadius: 20,
+        maxRadius: am5.percent(15),
       })
     );
 
