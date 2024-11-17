@@ -2,7 +2,7 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./backend
+      context: ./Backend
       dockerfile: Dockerfile
     ports:
       - "5001:5001"
