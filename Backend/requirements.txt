@@ -4,3 +4,6 @@ transformers
 torch==2.0.1
 numpy
 scikit-learn
+docx
+PyPDF2
+bs4
